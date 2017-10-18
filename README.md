@@ -7,13 +7,13 @@ This repository contains a simple service to wrap multiple OpeNER services that 
 ```bash
 # start the nlp services
 docker network create opener
-docker run --net opener --name opener-language-identifier cwolff/opener-docker-language-identifier
-docker run --net opener --name opener-tokenizer cwolff/opener-docker-tokenizer
-docker run --net opener --name opener-pos-tagger cwolff/opener-docker-pos-tagger
-docker run --net opener --name opener-ner cwolff/opener-docker-ner
+docker run -d --net opener --name opener-language-identifier cwolff/opener-docker-language-identifier
+docker run -d --net opener --name opener-tokenizer cwolff/opener-docker-tokenizer
+docker run -d --net opener --name opener-pos-tagger cwolff/opener-docker-pos-tagger
+docker run -d --net opener --name opener-ner cwolff/opener-docker-ner
 
 # start the wrapper service
-docker run --net opener -p 9999:80 cwolff/opener-docker-wrapper
+docker run -d --net opener -p 9999:80 cwolff/opener-docker-wrapper
 
 # call the wrapper service
 curl 'http://localhost:9999/opener' \
