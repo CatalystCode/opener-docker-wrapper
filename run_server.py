@@ -2,12 +2,15 @@
 """A simple webservice to wrap OpeNER services.
 
 """
+from functools import lru_cache
 from typing import Iterable
 from typing import Text
 from typing import Tuple
+from urllib.parse import urlparse
 
-from requests import RequestException
-from requests import post
+from aiohttp import ClientResponseError
+from aiohttp import ClientSession
+from asyncio_extras import async_contextmanager
 from sanic import Sanic
 from sanic.exceptions import InvalidUsage
 from sanic.exceptions import ServerError
@@ -22,7 +25,7 @@ app = Sanic(__name__)
 async def opener(request: Request) -> HTTPResponse:
     nlp, steps = _parse_request(request)
     for endpoint in _build_opener_urls(steps):
-        nlp = _call_opener_service(endpoint, nlp)
+        nlp = await _call_opener_service(endpoint, nlp)
     return HTTPResponse(nlp, content_type='application/xml')
 
 
@@ -39,6 +42,29 @@ def _parse_request(request: Request) -> Tuple[Text, Iterable[Text]]:
     return nlp, steps
 
 
+@lru_cache(maxsize=1)
+def _get_client_cache():
+    return {}
+
+
+@async_contextmanager
+async def _get_client_session(url: Text) -> ClientSession:
+    netloc = urlparse(url).netloc
+
+    if not netloc:
+        client = ClientSession()
+        yield client
+        await client.close()
+    else:
+        cache = _get_client_cache()
+        try:
+            client = cache[netloc]
+        except KeyError:
+            client = ClientSession()
+            cache[netloc] = client
+        yield client
+
+
 def _build_opener_urls(steps: Iterable[Text]) -> Iterable[Text]:
     try:
         return [app.config['OPENER_{}_URL'.format(step).upper()]
@@ -53,13 +79,16 @@ def _all_steps():
             if key.startswith('OPENER_') and key.endswith('_URL'))
 
 
-def _call_opener_service(endpoint: Text, data: Text) -> Text:
-    try:
-        response = post(endpoint, data={'input': data})
-        response.raise_for_status()
-    except RequestException as ex:
-        raise ServerError('unable to call {} {}'.format(endpoint, ex))
-    return response.text
+async def _call_opener_service(endpoint: Text, data: Text) -> Text:
+    async with _get_client_session(endpoint) as session:
+        async with session.post(endpoint, data={'input': data}) as response:
+            try:
+                response.raise_for_status()
+            except ClientResponseError as ex:
+                raise ServerError('unable to call {} {}'.format(endpoint, ex))
+
+            xml = await response.text()
+            return xml
 
 
 if __name__ == '__main__':
