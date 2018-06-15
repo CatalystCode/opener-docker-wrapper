@@ -125,8 +125,9 @@ if __name__ == '__main__':
     parser.add_argument('--host', default='0.0.0.0')
     parser.add_argument('--port', type=int, default=80)
     parser.add_argument('--loglevel', default='INFO')
+    parser.add_argument('--workers', type=int, default=cpu_count())
     args = parser.parse_args()
 
     log.setLevel(args.loglevel)
 
-    app.run(host=args.host, port=args.port, workers=cpu_count())
+    app.run(host=args.host, port=args.port, workers=args.workers)
