@@ -16,9 +16,28 @@ from sanic.exceptions import InvalidUsage
 from sanic.exceptions import ServerError
 from sanic.request import Request
 from sanic.response import HTTPResponse
+from sanic.response import json
+from sanic.response import text
 
 
 app = Sanic(__name__)
+
+
+@app.route('/ping/', methods=['GET'])
+async def ping(request: Request) -> HTTPResponse:
+    return text('OK')
+
+
+@app.route('/status/', methods=['GET'])
+async def status(request: Request) -> HTTPResponse:
+    urls = {key: value for key, value in app.config.items()
+            if key.startswith('OPENER_') and key.endswith('_URL')}
+
+    return json({
+        'config': {
+            'urls': urls
+        }
+    })
 
 
 @app.route('/opener/', methods=['POST'])
