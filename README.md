@@ -1,9 +1,9 @@
-[![Docker status](https://img.shields.io/docker/pulls/cwolff/opener-docker-wrapper.svg)](https://hub.docker.com/r/cwolff/opener-docker-wrapper/)
-
 # opener-docker-wrapper
 
-This repository contains a simple service to wrap multiple OpeNER services that run on the same Docker host and expose them via a unified API.
+[![Deploy to Azure](https://azuredeploy.net/deploybutton.svg)](https://azuredeploy.net/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/cwolff/opener-docker-wrapper.svg)](https://hub.docker.com/r/cwolff/opener-docker-wrapper/)
 
+This repository contains a simple service to wrap multiple OpeNER services and expose them via a unified API.
 
 ```bash
 # start the nlp services and wrapper service
