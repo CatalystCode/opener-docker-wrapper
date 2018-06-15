@@ -8,7 +8,7 @@ from typing import Text
 from typing import Tuple
 from urllib.parse import urlparse
 
-from aiohttp import ClientResponseError
+from aiohttp import ClientError
 from aiohttp import ClientSession
 from asyncio_extras import async_contextmanager
 from sanic import Sanic
@@ -84,7 +84,7 @@ async def _call_opener_service(endpoint: Text, data: Text) -> Text:
         async with session.post(endpoint, data={'input': data}) as response:
             try:
                 response.raise_for_status()
-            except ClientResponseError as ex:
+            except ClientError as ex:
                 raise ServerError('unable to call {} {}'.format(endpoint, ex))
 
             xml = await response.text()

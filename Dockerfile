@@ -5,7 +5,7 @@ ENV BUILD_DEPENDENCIES "build-base python3-dev"
 RUN apk add --update --no-cache ${BUILD_DEPENDENCIES}
 
 # Install Python 3.6
-RUN apk add --no-cache python3 libstdc++ \
+RUN apk add --no-cache python3 libstdc++ ca-certificates \
   && python3 -m ensurepip \
   && rm -r /usr/lib/python*/ensurepip \
   && pip3 install --no-cache-dir --upgrade pip setuptools \
