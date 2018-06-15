@@ -2,6 +2,7 @@
 """A simple webservice to wrap OpeNER services.
 
 """
+from datetime import datetime
 from functools import lru_cache
 from typing import Iterable
 from typing import Text
@@ -14,6 +15,7 @@ from asyncio_extras import async_contextmanager
 from sanic import Sanic
 from sanic.exceptions import InvalidUsage
 from sanic.exceptions import ServerError
+from sanic.log import log
 from sanic.request import Request
 from sanic.response import HTTPResponse
 from sanic.response import json
@@ -44,7 +46,12 @@ async def status(request: Request) -> HTTPResponse:
 async def opener(request: Request) -> HTTPResponse:
     nlp, steps = _parse_request(request)
     for endpoint in _build_opener_urls(steps):
+        log.info('Calling %s', endpoint)
+        start = datetime.utcnow()
         nlp = await _call_opener_service(endpoint, nlp)
+        end = datetime.utcnow()
+        elapsed_seconds = (end - start).total_seconds()
+        log.info('Done calling %s in %fs', endpoint, elapsed_seconds)
     return HTTPResponse(nlp, content_type='application/xml')
 
 
@@ -117,6 +124,9 @@ if __name__ == '__main__':
     parser = ArgumentParser(description=__doc__)
     parser.add_argument('--host', default='0.0.0.0')
     parser.add_argument('--port', type=int, default=80)
+    parser.add_argument('--loglevel', default='INFO')
     args = parser.parse_args()
+
+    log.setLevel(args.loglevel)
 
     app.run(host=args.host, port=args.port, workers=cpu_count())
