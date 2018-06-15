@@ -1,0 +1,31 @@
+version: '3.3'
+
+services:
+  wrapper:
+    image: cwolff/opener-docker-wrapper
+    build:
+      context: .
+    environment:
+      SANIC_OPENER_IDENTIFY_LANGUAGE_URL: http://language_identifier
+      SANIC_OPENER_TOKENIZE_URL: http://tokenizer
+      SANIC_OPENER_POS_URL: http://pos_tagger
+      SANIC_OPENER_NER_URL: http://ner
+    ports:
+      - 9999:80
+    depends_on:
+      - language_identifier
+      - tokenizer
+      - pos_tagger
+      - ner
+
+  language_identifier:
+    image: cwolff/opener-docker-language-identifier
+
+  tokenizer:
+    image: cwolff/opener-docker-tokenizer
+
+  pos_tagger:
+    image: cwolff/opener-docker-pos-tagger
+
+  ner:
+    image: cwolff/opener-docker-ner
