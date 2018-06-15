@@ -8,17 +8,16 @@ RUN apk add --update --no-cache ${BUILD_DEPENDENCIES}
 RUN apk add --no-cache python3 libstdc++ \
   && python3 -m ensurepip \
   && rm -r /usr/lib/python*/ensurepip \
-  && pip3 install --upgrade pip setuptools \
+  && pip3 install --no-cache-dir --upgrade pip setuptools \
   && if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip; fi
 
 # Set up tokenizer server
 ADD requirements.txt /app/requirements.txt
-RUN pip3 install -r /app/requirements.txt
+RUN pip3 install --no-cache-dir -r /app/requirements.txt
 ADD run_server.py /server.py
 
 # Cleanup
 RUN apk del ${BUILD_DEPENDENCIES} \
-  && rm -r /root/.cache \
   && rm /app/requirements.txt
 
 ENV SANIC_OPENER_IDENTIFY_LANGUAGE_URL "http://opener-language-identifier"
