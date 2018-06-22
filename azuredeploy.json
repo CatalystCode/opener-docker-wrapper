@@ -22,7 +22,8 @@
     "language_identifier_site_name": "[concat(parameters('site_name'), '-language-identifier')]",
     "tokenizer_site_name": "[concat(parameters('site_name'), '-tokenizer')]",
     "pos_tagger_site_name": "[concat(parameters('site_name'), '-pos-tagger')]",
-    "ner_site_name": "[concat(parameters('site_name'), '-ner')]"
+    "ner_site_name": "[concat(parameters('site_name'), '-ner')]",
+    "kaf2json_site_name": "[concat(parameters('site_name'), '-kaf2json')]"
   },
   "resources": [
     {
@@ -102,6 +103,25 @@
       }
     },
     {
+      "apiVersion": "2017-05-10",
+      "name": "kaf2json-deployment",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "https://raw.githubusercontent.com/c-w/kaf2json/master/azuredeploy.json"
+        },
+        "parameters": {
+          "site_name": {
+            "value": "[variables('kaf2json_site_name')]"
+          },
+          "appserviceplan_size": {
+            "value": "[parameters('appserviceplan_size')]"
+          }
+        }
+      }
+    },
+    {
       "type": "Microsoft.Web/serverfarms",
       "sku": {
         "name": "[parameters('appserviceplan_size')]",
@@ -155,7 +175,8 @@
             "SANIC_OPENER_IDENTIFY_LANGUAGE_URL": "[concat('https://', variables('language_identifier_site_name'), '.azurewebsites.net')]",
             "SANIC_OPENER_TOKENIZE_URL": "[concat('https://', variables('tokenizer_site_name'), '.azurewebsites.net')]",
             "SANIC_OPENER_POS_URL": "[concat('https://', variables('pos_tagger_site_name'), '.azurewebsites.net')]",
-            "SANIC_OPENER_NER_URL": "[concat('https://', variables('ner_site_name'), '.azurewebsites.net')]"
+            "SANIC_OPENER_NER_URL": "[concat('https://', variables('ner_site_name'), '.azurewebsites.net')]",
+            "SANIC_OPENER_KAF2JSON_URL": "[concat('https://', variables('kaf2json_site_name'), '.azurewebsites.net')]"
           }
         },
         {

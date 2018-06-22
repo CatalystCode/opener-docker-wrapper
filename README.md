@@ -21,7 +21,8 @@ curl 'http://localhost:9999/opener' \
        ]}'
 ```
 
-The response of the service will be an XML document in [KAF format](http://kyoto-project.eu/xmlgroup.iit.cnr.it/kyoto/indexdd46.html?option=com_content&view=article&id=141&Itemid=130).
-A sample output for the sample input above can be found [here](https://github.com/c-w/opener-docker-wrapper/files/2128722/rome.xml.txt).
+By default the response will be returned as JSON. If the raw OpeNER XML
+output in [KAF format](http://kyoto-project.eu/xmlgroup.iit.cnr.it/kyoto/indexdd46.html?option=com_content&view=article&id=141&Itemid=130)
+is desired, set the request accept header to `application/xml`. [Sample JSON response](https://github.com/c-w/opener-docker-wrapper/files/2129059/rome.json.txt). [Sample XML response](https://github.com/c-w/opener-docker-wrapper/files/2128722/rome.xml.txt).
 
 If you are looking for additional NLP capabilities beyond the ones listed above, take a look at [@devkws's fork](https://github.com/devkws/opener-docker-wrapper) which adds [constituent-parsing](https://github.com/devkws/opener-docker-constituent-parser), [polarity-tagging](https://github.com/devkws/opener-docker-polarity-tagger) and [opinion-detection](https://github.com/devkws/opener-docker-opinion-detector-basic).

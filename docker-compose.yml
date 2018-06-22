@@ -10,6 +10,7 @@ services:
       SANIC_OPENER_TOKENIZE_URL: http://tokenizer
       SANIC_OPENER_POS_URL: http://pos_tagger
       SANIC_OPENER_NER_URL: http://ner
+      SANIC_OPENER_KAF2JSON_URL: http://kaf2json
     ports:
       - 9999:80
     depends_on:
@@ -17,6 +18,7 @@ services:
       - tokenizer
       - pos_tagger
       - ner
+      - kaf2json
 
   language_identifier:
     image: cwolff/opener-docker-language-identifier
@@ -29,3 +31,6 @@ services:
 
   ner:
     image: cwolff/opener-docker-ner
+
+  kaf2json:
+    image: cwolff/opener-docker-kaf2json

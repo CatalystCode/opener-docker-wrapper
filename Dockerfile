@@ -24,6 +24,7 @@ ENV SANIC_OPENER_IDENTIFY_LANGUAGE_URL "http://opener-language-identifier"
 ENV SANIC_OPENER_TOKENIZE_URL "http://opener-tokenizer"
 ENV SANIC_OPENER_POS_URL "http://opener-pos-tagger"
 ENV SANIC_OPENER_NER_URL "http://opener-ner"
+ENV SANIC_OPENER_KAF2JSON_URL "http://opener-kaf2json"
 
 EXPOSE 80
 CMD ["python3.6", "/server.py", "--port", "80"]
