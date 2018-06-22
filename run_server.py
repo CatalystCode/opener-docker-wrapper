@@ -4,6 +4,7 @@
 """
 from datetime import datetime
 from functools import lru_cache
+from typing import Dict
 from typing import Iterable
 from typing import Text
 from typing import Tuple
@@ -20,6 +21,8 @@ from sanic.request import Request
 from sanic.response import HTTPResponse
 from sanic.response import json
 from sanic.response import text
+
+Texts = Iterable[Text]
 
 
 app = Sanic(__name__)
@@ -57,7 +60,7 @@ async def opener(request: Request) -> HTTPResponse:
     return HTTPResponse(nlp, content_type=content_type)
 
 
-def _parse_request(request: Request) -> Tuple[Text, Iterable[Text]]:
+def _parse_request(request: Request) -> Tuple[Text, Texts, Text]:
     nlp = (request.json or {}).get('text')
     if not nlp:
         raise InvalidUsage('no input defined to process, please '
@@ -82,7 +85,7 @@ def _parse_request(request: Request) -> Tuple[Text, Iterable[Text]]:
 
 
 @lru_cache(maxsize=1)
-def _get_client_cache():
+def _get_client_cache() -> Dict[Text, ClientSession]:
     return {}
 
 
@@ -104,8 +107,7 @@ async def _get_client_session(url: Text) -> ClientSession:
         yield client
 
 
-def _build_opener_urls(steps: Iterable[Text],
-                       content_type: Text) -> Iterable[Text]:
+def _build_opener_urls(steps: Texts, content_type: Text) -> Texts:
     try:
         steps = [app.config['OPENER_{}_URL'.format(step).upper()]
                  for step in steps]
@@ -123,12 +125,12 @@ def _build_opener_urls(steps: Iterable[Text],
     return steps
 
 
-def _all_steps():
+def _all_steps() -> Texts:
     return (key[len('OPENER_'):-len('_URL')] for key in app.config
             if key.startswith('OPENER_') and key.endswith('_URL'))
 
 
-def _all_content_types():
+def _all_content_types() -> Tuple[Text]:
     return 'application/json', 'application/xml'
 
 
