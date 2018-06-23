@@ -29,7 +29,7 @@ CORS(app, automatic_options=True)
 
 @app.route('/', methods=['GET'])
 async def index(request: Request) -> HTTPResponse:
-    return await response.file('static/index.html')
+    return await response.file('static/test_page.html')
 
 
 @app.route('/favicon.ico', methods=['GET'])
