@@ -2,7 +2,6 @@
 """A simple webservice to wrap OpeNER services.
 
 """
-from datetime import datetime
 from functools import lru_cache
 from typing import Dict
 from typing import Iterable
@@ -17,14 +16,15 @@ from sanic import Sanic
 from sanic import response
 from sanic.exceptions import InvalidUsage
 from sanic.exceptions import ServerError
-from sanic.log import log
 from sanic.request import Request
 from sanic.response import HTTPResponse
+from sanic_cors import CORS
 
 Texts = Iterable[Text]
 
 
 app = Sanic(__name__)
+CORS(app, automatic_options=True)
 
 
 @app.route('/', methods=['GET'])
@@ -61,12 +61,7 @@ async def opener(request: Request) -> HTTPResponse:
     nlp, steps, accept = _parse_request(request)
 
     for endpoint in _build_opener_urls(steps, accept):
-        log.info('Calling %s', endpoint)
-        start = datetime.utcnow()
         nlp = await _call_opener_service(endpoint, nlp)
-        end = datetime.utcnow()
-        elapsed_seconds = (end - start).total_seconds()
-        log.info('Done calling %s in %fs', endpoint, elapsed_seconds)
 
     return HTTPResponse(nlp, content_type=accept)
 
@@ -163,10 +158,7 @@ if __name__ == '__main__':
     parser = ArgumentParser(description=__doc__)
     parser.add_argument('--host', default='0.0.0.0')
     parser.add_argument('--port', type=int, default=80)
-    parser.add_argument('--loglevel', default='INFO')
     parser.add_argument('--workers', type=int, default=cpu_count())
     args = parser.parse_args()
-
-    log.setLevel(args.loglevel)
 
     app.run(host=args.host, port=args.port, workers=args.workers)
