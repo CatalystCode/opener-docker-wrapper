@@ -113,11 +113,18 @@
       }
 
       function main() {
-        $.getJSON('/status', function(status) {
-          renderAccepts(status.config.accept);
-          renderSteps(status.config.steps);
-          setupSubmit();
-          revealContent();
+        $.ajax({
+          url: '/status',
+          method: 'GET',
+          success: function(data) {
+            renderAccepts(data.config.accept);
+            renderSteps(data.config.steps);
+            setupSubmit();
+            revealContent();
+          },
+          error: function(response) {
+            $('body').text('<HTTP ' + response.status + '> ' + response.responseText);
+          }
         });
       }
 
