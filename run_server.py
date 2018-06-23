@@ -14,13 +14,12 @@ from aiohttp import ClientError
 from aiohttp import ClientSession
 from asyncio_extras import async_contextmanager
 from sanic import Sanic
+from sanic import response
 from sanic.exceptions import InvalidUsage
 from sanic.exceptions import ServerError
 from sanic.log import log
 from sanic.request import Request
 from sanic.response import HTTPResponse
-from sanic.response import json
-from sanic.response import text
 
 Texts = Iterable[Text]
 
@@ -28,9 +27,14 @@ Texts = Iterable[Text]
 app = Sanic(__name__)
 
 
+@app.route('/', methods=['GET'])
+async def index(request: Request) -> HTTPResponse:
+    return await response.file('index.html')
+
+
 @app.route('/ping/', methods=['GET'])
 async def ping(request: Request) -> HTTPResponse:
-    return text('OK')
+    return response.text('OK')
 
 
 @app.route('/status/', methods=['GET'])
@@ -38,8 +42,10 @@ async def status(request: Request) -> HTTPResponse:
     urls = {key: value for key, value in app.config.items()
             if key.startswith('OPENER_') and key.endswith('_URL')}
 
-    return json({
+    return response.json({
         'config': {
+            'accept': _get_all_accept_values(),
+            'steps': _all_steps(),
             'urls': urls
         }
     })
@@ -47,9 +53,9 @@ async def status(request: Request) -> HTTPResponse:
 
 @app.route('/opener/', methods=['POST'])
 async def opener(request: Request) -> HTTPResponse:
-    nlp, steps, content_type = _parse_request(request)
+    nlp, steps, accept = _parse_request(request)
 
-    for endpoint in _build_opener_urls(steps, content_type):
+    for endpoint in _build_opener_urls(steps, accept):
         log.info('Calling %s', endpoint)
         start = datetime.utcnow()
         nlp = await _call_opener_service(endpoint, nlp)
@@ -57,7 +63,7 @@ async def opener(request: Request) -> HTTPResponse:
         elapsed_seconds = (end - start).total_seconds()
         log.info('Done calling %s in %fs', endpoint, elapsed_seconds)
 
-    return HTTPResponse(nlp, content_type=content_type)
+    return HTTPResponse(nlp, content_type=accept)
 
 
 def _parse_request(request: Request) -> Tuple[Text, Texts, Text]:
@@ -72,16 +78,16 @@ def _parse_request(request: Request) -> Tuple[Text, Texts, Text]:
                            'please specify at least one step, all '
                            'steps are: {}'.format(', '.join(_all_steps())))
 
-    content_types = _all_content_types()
-    content_type = request.headers.get('Accept', content_types[0])
-    if content_type == '*/*':
-        content_type = content_types[0]
-    if content_type not in content_types:
+    accept_values = _get_all_accept_values()
+    accept = request.headers.get('Accept', accept_values[0])
+    if accept == '*/*':
+        accept = accept_values[0]
+    if accept not in accept_values:
         raise InvalidUsage('unknown accept header {}, '
                            'please specify one of: {}'
-                           .format(content_type, ', '.join(content_types)))
+                           .format(accept, ', '.join(accept_values)))
 
-    return nlp, steps, content_type
+    return nlp, steps, accept
 
 
 @lru_cache(maxsize=1)
@@ -107,7 +113,7 @@ async def _get_client_session(url: Text) -> ClientSession:
         yield client
 
 
-def _build_opener_urls(steps: Texts, content_type: Text) -> Texts:
+def _build_opener_urls(steps: Texts, accept: Text) -> Texts:
     try:
         steps = [app.config['OPENER_{}_URL'.format(step).upper()]
                  for step in steps]
@@ -115,12 +121,12 @@ def _build_opener_urls(steps: Texts, content_type: Text) -> Texts:
         raise InvalidUsage('unknown step {}, all steps are: {}'
                            .format(ex, ', '.join(_all_steps())))
 
-    if content_type == 'application/json' and steps[-1].lower() != 'kaf2json':
+    if accept == 'application/json' and steps[-1].lower() != 'kaf2json':
         try:
             steps.append(app.config['OPENER_KAF2JSON_URL'])
-        except KeyError:
-            raise InvalidUsage('application/json content type requested '
-                               'but OPENER_KAF2JSON_URL is not set')
+        except KeyError as ex:
+            raise InvalidUsage('application/json requested but '
+                               '{} is not set'.format(ex))
 
     return steps
 
@@ -130,7 +136,7 @@ def _all_steps() -> Texts:
             if key.startswith('OPENER_') and key.endswith('_URL'))
 
 
-def _all_content_types() -> Tuple[Text]:
+def _get_all_accept_values() -> Tuple[Text]:
     return 'application/json', 'application/xml'
 
 

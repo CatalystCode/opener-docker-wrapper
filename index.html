@@ -1,0 +1,129 @@
+<html lang="en">
+<head>
+  <title>OpeNER wrapper service test page</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    .hidden {
+      display: none !important;
+    }
+
+    #text {
+      height: 5em;
+      width: 100%;
+    }
+
+    #submit {
+      margin-top: 1em;
+    }
+  </style>
+</head>
+<body>
+  <div id="content" class="hidden">
+    <h1>OpeNER wrapper service test page</h1>
+    <fieldset>
+      <legend>Enter the text to analyze</legend>
+      <textarea id="text"></textarea>
+    </fieldset>
+    <fieldset id="steps">
+      <legend>Select the steps for the analysis</legend>
+    </fieldset>
+    <fieldset id="accepts">
+      <legend>Select the encoding for the analysis response</legend>
+    </fieldset>
+    <button id="submit">Run analysis!</button>
+    <pre id="result" class="hidden"></pre>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script>
+    (function() {
+      function renderAccepts(accepts) {
+        var $fieldset = $('#accepts');
+
+        $.each(accepts, function(i, accept) {
+          var id = 'accept' + i;
+          var $field = $('<div />');
+          var $radio = $('<input type="radio" name="accept" />').attr('id', id).attr('value', accept);
+          var $label = $('<label />').attr('for', id).html(accept);
+          $radio.appendTo($field);
+          $label.appendTo($field);
+          $field.appendTo($fieldset);
+        });
+      }
+
+      function renderSteps(steps) {
+        var $fieldset = $('#steps');
+
+        $.each(steps, function(i, step) {
+          var stepName = step.toLowerCase();
+          if (stepName !== 'kaf2json') {
+            var id = 'step' + i;
+            var $field = $('<div />');
+            var $checkbox = $('<input type="checkbox" />').attr('id', id).attr('value', step);
+            var $label = $('<label />').attr('for', id).text(stepName);
+            $checkbox.appendTo($field);
+            $label.appendTo($field);
+            $field.appendTo($fieldset);
+          }
+        });
+      }
+
+      function setupSubmit() {
+        $('#submit').click(function() {
+          var accept = null;
+          $('#accepts input').each(function(i, node) {
+            if (node.checked) {
+              accept = node.value;
+            }
+          });
+
+          var steps = [];
+          $('#steps input').each(function(i, node) {
+            if (node.checked) {
+              steps.push(node.value);
+            }
+          });
+
+          var text = $('#text').val();
+
+          $.ajax({
+            url: '/opener',
+            method: 'POST',
+            headers: { 'Accept': accept, 'Content-Type': 'application/json' },
+            data: JSON.stringify({ steps: steps, text: text }),
+            success: function(data, textStatus, response) {
+              $('#submit').removeAttr('disabled').text('Run analysis!');
+              $('#result').removeClass('hidden').text(response.responseText);
+            },
+            error: function(response) {
+              $('#submit').removeAttr('disabled').text('Run analysis!');
+              $('#result').removeClass('hidden').text('<HTTP ' + response.status + '> ' + response.responseText);
+            }
+          });
+
+          $('#submit').attr('disabled', 'disabled').text('Running analysis...');
+          $('#result').text('');
+        });
+      }
+
+      function revealContent() {
+        $('#content').removeClass('hidden');
+      }
+
+      function main() {
+        $.getJSON('/status', function(status) {
+          renderAccepts(status.config.accept);
+          renderSteps(status.config.steps);
+          setupSubmit();
+          revealContent();
+        });
+      }
+
+      $(document).ready(main);
+    }());
+  </script>
+</body>
+</html>
+

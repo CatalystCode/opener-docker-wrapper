@@ -21,6 +21,8 @@ curl 'http://localhost:9999/opener' \
        ]}'
 ```
 
+A test page for the service is available at [https://localhost:9999](http://localhost:9999).
+
 By default the response will be returned as JSON. If the raw OpeNER XML
 output in [KAF format](http://kyoto-project.eu/xmlgroup.iit.cnr.it/kyoto/indexdd46.html?option=com_content&view=article&id=141&Itemid=130)
 is desired, set the request accept header to `application/xml`. [Sample JSON response](https://github.com/c-w/opener-docker-wrapper/files/2129059/rome.json.txt). [Sample XML response](https://github.com/c-w/opener-docker-wrapper/files/2128722/rome.xml.txt).
