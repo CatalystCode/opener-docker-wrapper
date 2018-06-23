@@ -141,9 +141,8 @@ async def _call_opener_service(endpoint: Text, data: Text) -> Text:
                 response.raise_for_status()
             except ClientError as ex:
                 raise ServerError('unable to call {} {}'.format(endpoint, ex))
-
-            xml = await response.text()
-            return xml
+            else:
+                return await response.text()
 
 
 if __name__ == '__main__':
