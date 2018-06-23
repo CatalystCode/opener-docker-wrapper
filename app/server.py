@@ -3,6 +3,8 @@
 
 """
 from functools import lru_cache
+from os.path import dirname
+from os.path import join
 from typing import Dict
 from typing import Iterable
 from typing import Text
@@ -24,17 +26,11 @@ Texts = Iterable[Text]
 
 
 app = Sanic(__name__)
+
+app.static('/favicon.ico', join(dirname(__file__), 'static', 'favicon.ico'))
+app.static('/', join(dirname(__file__), 'static', 'test_page.html'))
+
 CORS(app, automatic_options=True)
-
-
-@app.route('/', methods=['GET'])
-async def index(request: Request) -> HTTPResponse:
-    return await response.file('static/test_page.html')
-
-
-@app.route('/favicon.ico', methods=['GET'])
-async def favicon(request: Request) -> HTTPResponse:
-    return await response.file('static/favicon.ico')
 
 
 @app.route('/ping/', methods=['GET'])
