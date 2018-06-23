@@ -71,6 +71,10 @@
         });
       }
 
+      function renderError(selector, response) {
+        $(selector).removeClass('hidden').text('<HTTP ' + response.status + '> ' + response.responseText);
+      }
+
       function setupSubmit() {
         $('#submit').click(function() {
           var accept = null;
@@ -100,7 +104,7 @@
             },
             error: function(response) {
               $('#submit').removeAttr('disabled').text('Run analysis!');
-              $('#result').removeClass('hidden').text('<HTTP ' + response.status + '> ' + response.responseText);
+              renderError('#result', response);
             }
           });
 
@@ -124,7 +128,7 @@
             revealContent();
           },
           error: function(response) {
-            $('body').text('<HTTP ' + response.status + '> ' + response.responseText);
+            renderError('body', response);
           }
         });
       }
