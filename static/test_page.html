@@ -46,7 +46,7 @@
         $.each(accepts, function(i, accept) {
           var id = 'accept' + i;
           var $field = $('<div />');
-          var $radio = $('<input type="radio" name="accept" />').attr('id', id).attr('value', accept);
+          var $radio = $('<input type="radio" name="accept" />').attr('id', id).attr('value', accept).attr('checked', i === 0);
           var $label = $('<label />').attr('for', id).html(accept);
           $radio.appendTo($field);
           $label.appendTo($field);
@@ -62,7 +62,7 @@
           if (stepName !== 'kaf2json') {
             var id = 'step' + i;
             var $field = $('<div />');
-            var $checkbox = $('<input type="checkbox" />').attr('id', id).attr('value', step);
+            var $checkbox = $('<input type="checkbox" checked />').attr('id', id).attr('value', step);
             var $label = $('<label />').attr('for', id).text(stepName);
             $checkbox.appendTo($field);
             $label.appendTo($field);
