@@ -1,4 +1,4 @@
 *
-!*.html
+!static/
 !*.py
 !requirements*.txt

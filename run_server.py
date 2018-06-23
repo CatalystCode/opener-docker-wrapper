@@ -29,7 +29,12 @@ app = Sanic(__name__)
 
 @app.route('/', methods=['GET'])
 async def index(request: Request) -> HTTPResponse:
-    return await response.file('index.html')
+    return await response.file('static/index.html')
+
+
+@app.route('/favicon.ico', methods=['GET'])
+async def favicon(request: Request) -> HTTPResponse:
+    return await response.file('static/favicon.ico')
 
 
 @app.route('/ping/', methods=['GET'])

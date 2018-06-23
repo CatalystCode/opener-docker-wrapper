@@ -9,7 +9,7 @@ RUN python3 -m venv /venv \
   && /venv/bin/pip install --no-cache-dir --upgrade pip setuptools \
   && /venv/bin/pip install --no-cache-dir -r /app/requirements.txt
 
-ADD index.html /app/index.html
+ADD static/ /app/static
 ADD run_server.py /app/server.py
 
 ENV SANIC_OPENER_IDENTIFY_LANGUAGE_URL="http://opener-language-identifier"
