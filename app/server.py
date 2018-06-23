@@ -33,12 +33,12 @@ app.static('/', join(dirname(__file__), 'static', 'test_page.html'))
 CORS(app, automatic_options=True)
 
 
-@app.route('/ping/', methods=['GET'])
+@app.route('/ping', methods=['GET'])
 async def ping(request: Request) -> HTTPResponse:
     return response.text('OK')
 
 
-@app.route('/status/', methods=['GET'])
+@app.route('/status', methods=['GET'])
 async def status(request: Request) -> HTTPResponse:
     urls = {key: value for key, value in app.config.items()
             if key.startswith('OPENER_') and key.endswith('_URL')}
@@ -52,7 +52,7 @@ async def status(request: Request) -> HTTPResponse:
     })
 
 
-@app.route('/opener/', methods=['POST'])
+@app.route('/opener', methods=['POST'])
 async def opener(request: Request) -> HTTPResponse:
     nlp, steps, accept = _parse_request(request)
 
