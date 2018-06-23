@@ -21,7 +21,7 @@ curl 'http://localhost:9999/opener' \
        ]}'
 ```
 
-A test page for the service is available at [https://localhost:9999](http://localhost:9999).
+A test page for the service is available at [http://localhost:9999](http://localhost:9999).
 
 By default the response will be returned as JSON. If the raw OpeNER XML
 output in [KAF format](http://kyoto-project.eu/xmlgroup.iit.cnr.it/kyoto/indexdd46.html?option=com_content&view=article&id=141&Itemid=130)
