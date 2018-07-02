@@ -33,7 +33,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "https://raw.githubusercontent.com/c-w/opener-docker-language-identifier/master/azuredeploy.json"
+          "uri": "https://raw.githubusercontent.com/CatalystCode/opener-docker-language-identifier/master/azuredeploy.json"
         },
         "parameters": {
           "site_name": {
@@ -52,7 +52,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "https://raw.githubusercontent.com/c-w/opener-docker-tokenizer/master/azuredeploy.json"
+          "uri": "https://raw.githubusercontent.com/CatalystCode/opener-docker-tokenizer/master/azuredeploy.json"
         },
         "parameters": {
           "site_name": {
@@ -71,7 +71,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "https://raw.githubusercontent.com/c-w/opener-docker-pos-tagger/master/azuredeploy.json"
+          "uri": "https://raw.githubusercontent.com/CatalystCode/opener-docker-pos-tagger/master/azuredeploy.json"
         },
         "parameters": {
           "site_name": {
@@ -90,7 +90,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "https://raw.githubusercontent.com/c-w/opener-docker-ner/master/azuredeploy.json"
+          "uri": "https://raw.githubusercontent.com/CatalystCode/opener-docker-ner/master/azuredeploy.json"
         },
         "parameters": {
           "site_name": {
@@ -109,7 +109,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "https://raw.githubusercontent.com/c-w/kaf2json/master/azuredeploy.json"
+          "uri": "https://raw.githubusercontent.com/CatalystCode/kaf2json/master/azuredeploy.json"
         },
         "parameters": {
           "site_name": {
